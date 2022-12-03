@@ -27,12 +27,12 @@ func main() {
 		}
 	}
 	count = append(count, cur)
-	sort.Ints(count)
+	sort.Sort(sort.Reverse(sort.IntSlice(count)))
 
-	fmt.Printf("part 1: %d\n", count[len(count)-1])
+	fmt.Printf("part 1: %d\n", count[0])
 
 	var partTwo int
-	for _, x := range count[len(count)-3:] {
+	for _, x := range count[:3] {
 		partTwo += x
 	}
 
