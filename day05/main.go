@@ -22,6 +22,7 @@ func main() {
 	scanner := bufio.NewScanner(file)
 	lines := []string{}
 	floor := [9]stack{}
+	newFloor := [9]stack{}
 
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
@@ -35,6 +36,7 @@ func main() {
 
 			if isLetter(char) {
 				floor[transform[i]].pushBottom(char)
+				newFloor[transform[i]].pushBottom(char)
 			}
 		}
 	}
@@ -44,21 +46,27 @@ func main() {
 
 		fmt.Sscanf(line, "move %d from %d to %d", &count, &from, &to)
 
-		fmt.Println(floor)
 		for i := 0; i < count; i++ {
 			top := floor[from-1].popTop()
 			floor[to-1].pushTop(top)
 		}
-		fmt.Println(floor)
+
+		top := newFloor[from-1].popMultiTop(count)
+		newFloor[to-1].pushMultiTop(top)
 	}
 
 	partOne := []string{}
+	partTwo := []string{}
 
 	for _, x := range floor {
 		partOne = append(partOne, x[len(x)-1])
 	}
+	for _, x := range newFloor {
+		partTwo = append(partTwo, x[len(x)-1])
+	}
 
 	fmt.Println("part 1: ", strings.Join(partOne, ""))
+	fmt.Println("part 2: ", strings.Join(partTwo, ""))
 }
 
 // remove from end
@@ -76,4 +84,16 @@ func (s *stack) pushTop(e string) {
 // add to start
 func (s *stack) pushBottom(e string) {
 	*s = append([]string{e}, *s...)
+}
+
+// remove many from end
+func (s *stack) popMultiTop(count int) []string {
+	e := (*s)[len(*s)-count : len(*s)]
+	*s = (*s)[0 : len(*s)-count]
+	return e
+}
+
+// add many to end
+func (s *stack) pushMultiTop(e []string) {
+	*s = append(*s, e...)
 }
