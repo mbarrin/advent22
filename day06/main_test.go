@@ -17,6 +17,11 @@ func TestMarker(t *testing.T) {
 		"three": {input: []rune("nppdvjthqldpwncqszvftbrmjlhg"), count: 4, output: 6},
 		"four":  {input: []rune("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"), count: 4, output: 10},
 		"five":  {input: []rune("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"), count: 4, output: 11},
+		"six":   {input: []rune("mjqjpqmgbljsphdztnvjfqwrcgsmlb"), count: 14, output: 19},
+		"seven": {input: []rune("bvwbjplbgvbhsrlpgdmjqwftvncz"), count: 14, output: 23},
+		"eight": {input: []rune("nppdvjthqldpwncqszvftbrmjlhg"), count: 14, output: 23},
+		"nine":  {input: []rune("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg"), count: 14, output: 29},
+		"ten":   {input: []rune("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"), count: 14, output: 26},
 	}
 
 	for name, tc := range tests {
