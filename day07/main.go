@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -34,15 +35,16 @@ func main() {
 
 	tree := parseInput(lines)
 
-	validNodes := tree.validNodes(map[string]int{})
+	validNodes := tree.validNodes(map[string]int{}, 100000)
+	allNodes := tree.validNodes(map[string]int{}, 0)
 
-	fmt.Println(validNodes)
 	var total int
 	for _, s := range validNodes {
 		total += s
 	}
-
 	fmt.Println("part 1:", total)
+
+	fmt.Println("part 2:", nodeToDeleteSize(allNodes))
 
 }
 
@@ -59,15 +61,12 @@ func parseInput(lines []string) *node {
 			new := newNode(current, cwd)
 			current.addDir(new)
 			current = new
-			fmt.Println(cwd)
 		case cdOut(cmd):
 			cwd = out(cwd)
 			current = current.parent
-			fmt.Println(cwd)
 		case cdRoot(cmd):
 			cwd = "/"
 			current = root
-			fmt.Println(cwd)
 		case ls(cmd):
 			i += list(lines[i+1:], current)
 		}
@@ -104,6 +103,21 @@ func list(lines []string, current *node) int {
 	return numFiles
 }
 
+func nodeToDeleteSize(nodes map[string]int) int {
+	totalSpace := 70000000
+	neededSpace := 30000000
+	unUsed := totalSpace - nodes["/"]
+
+	canDelete := []int{}
+	for _, s := range nodes {
+		if unUsed+s >= neededSpace {
+			canDelete = append(canDelete, s)
+		}
+	}
+	sort.Ints(canDelete)
+	return canDelete[0]
+}
+
 func (n *node) addDir(dir *node) {
 	n.dirs = append(n.dirs, dir)
 }
@@ -129,13 +143,13 @@ func (n *node) sizeOfTree() int {
 	return size
 }
 
-func (n *node) validNodes(m map[string]int) map[string]int {
+func (n *node) validNodes(m map[string]int, limit int) map[string]int {
 	size := n.sizeOfTree()
-	if size <= 100000 {
+	if size <= limit || limit == 0 {
 		m[n.path] = size
 	}
 	for _, x := range n.dirs {
-		m = x.validNodes(m)
+		m = x.validNodes(m, limit)
 	}
 
 	return m

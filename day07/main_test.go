@@ -205,9 +205,43 @@ func TestValidNodes(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			actual := tc.input.validNodes(map[string]int{})
+			actual := tc.input.validNodes(map[string]int{}, 100000)
+			assert.Equal(t, tc.output, actual)
+		})
+	}
+
+	tests = map[string]struct {
+		input  *node
+		output map[string]int
+	}{
+		"/ no limit": {input: root, output: map[string]int{root.path: 48381165, a.path: 94853, d.path: 24933642, e.path: 584}},
+		"a no limit": {input: a, output: map[string]int{a.path: 94853, e.path: 584}},
+		"d no limit": {input: d, output: map[string]int{d.path: 24933642}},
+		"e no limit": {input: e, output: map[string]int{e.path: 584}},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			actual := tc.input.validNodes(map[string]int{}, 0)
 			assert.Equal(t, tc.output, actual)
 		})
 
+	}
+
+}
+
+func TestNodeToDeleteSize(t *testing.T) {
+
+	tests := map[string]struct {
+		input  map[string]int
+		output int
+	}{
+		"/": {input: root.validNodes(map[string]int{}, 0), output: 24933642},
+	}
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			actual := nodeToDeleteSize(tc.input)
+			assert.Equal(t, tc.output, actual)
+		})
 	}
 }
