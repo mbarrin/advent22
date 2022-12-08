@@ -16,17 +16,12 @@ type node struct {
 	files  map[string]int
 }
 
-type valid struct {
-	node *node
-	size int
-}
-
 var cdIn = regexp.MustCompile(`^\$ cd [a-zA-Z]+$`).MatchString
 var cdOut = regexp.MustCompile(`^\$ cd ..$`).MatchString
 var cdRoot = regexp.MustCompile(`^\$ cd /$`).MatchString
 var ls = regexp.MustCompile(`^\$ ls$`).MatchString
 var file = regexp.MustCompile(`^\d+ [a-zA-Z](\.[a-zA-Z]+)?`).MatchString
-var dir = regexp.MustCompile(`^dir [a-zA-Z]$`).MatchString
+var dir = regexp.MustCompile(`^dir [a-zA-Z]+$`).MatchString
 
 func main() {
 	file, _ := os.Open("input.txt")
@@ -39,11 +34,12 @@ func main() {
 
 	tree := parseInput(lines)
 
-	validNodes := tree.validNodes([]*valid{})
+	validNodes := tree.validNodes(map[string]int{})
 
+	fmt.Println(validNodes)
 	var total int
-	for _, x := range validNodes {
-		total += x.size
+	for _, s := range validNodes {
+		total += s
 	}
 
 	fmt.Println("part 1:", total)
@@ -133,16 +129,16 @@ func (n *node) sizeOfTree() int {
 	return size
 }
 
-func (n *node) validNodes(v []*valid) []*valid {
+func (n *node) validNodes(m map[string]int) map[string]int {
 	size := n.sizeOfTree()
 	if size <= 100000 {
-		v = append(v, &valid{node: n, size: size})
+		m[n.path] = size
 	}
 	for _, x := range n.dirs {
-		v = x.validNodes(v)
+		m = x.validNodes(m)
 	}
 
-	return v
+	return m
 }
 
 func newNode(parent *node, path string) *node {
