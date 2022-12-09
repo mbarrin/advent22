@@ -18,17 +18,21 @@ func TestFollow(t *testing.T) {
 		"right": {inputHead: &point{2, 0}, inputTail: &point{0, 0}, outputHead: &point{2, 0}, outputTail: &point{1, 0}},
 		"left":  {inputHead: &point{-2, 0}, inputTail: &point{0, 0}, outputHead: &point{-2, 0}, outputTail: &point{-1, 0}},
 
-		"diag 1": {inputHead: &point{2, -1}, inputTail: &point{0, 0}, outputHead: &point{2, -1}, outputTail: &point{1, -1}},
-		"diag 2": {inputHead: &point{1, -2}, inputTail: &point{0, 0}, outputHead: &point{1, -2}, outputTail: &point{1, -1}},
+		"diag 1":        {inputHead: &point{2, -1}, inputTail: &point{0, 0}, outputHead: &point{2, -1}, outputTail: &point{1, -1}},
+		"diag 2":        {inputHead: &point{1, -2}, inputTail: &point{0, 0}, outputHead: &point{1, -2}, outputTail: &point{1, -1}},
+		"part 2 diag 1": {inputHead: &point{2, -2}, inputTail: &point{0, 0}, outputHead: &point{2, -2}, outputTail: &point{1, -1}},
 
-		"diag 3": {inputHead: &point{2, 1}, inputTail: &point{0, 0}, outputHead: &point{2, 1}, outputTail: &point{1, 1}},
-		"diag 4": {inputHead: &point{1, 2}, inputTail: &point{0, 0}, outputHead: &point{1, 2}, outputTail: &point{1, 1}},
+		"diag 3":        {inputHead: &point{2, 1}, inputTail: &point{0, 0}, outputHead: &point{2, 1}, outputTail: &point{1, 1}},
+		"diag 4":        {inputHead: &point{1, 2}, inputTail: &point{0, 0}, outputHead: &point{1, 2}, outputTail: &point{1, 1}},
+		"part 2 diag 2": {inputHead: &point{2, 2}, inputTail: &point{0, 0}, outputHead: &point{2, 2}, outputTail: &point{1, 1}},
 
-		"diag 5": {inputHead: &point{-1, 2}, inputTail: &point{0, 0}, outputHead: &point{-1, 2}, outputTail: &point{-1, 1}},
-		"diag 6": {inputHead: &point{-2, 1}, inputTail: &point{0, 0}, outputHead: &point{-2, 1}, outputTail: &point{-1, 1}},
+		"diag 5":        {inputHead: &point{-1, 2}, inputTail: &point{0, 0}, outputHead: &point{-1, 2}, outputTail: &point{-1, 1}},
+		"diag 6":        {inputHead: &point{-2, 1}, inputTail: &point{0, 0}, outputHead: &point{-2, 1}, outputTail: &point{-1, 1}},
+		"part 2 diag 3": {inputHead: &point{-2, 2}, inputTail: &point{0, 0}, outputHead: &point{-2, 2}, outputTail: &point{-1, 1}},
 
-		"diag 7": {inputHead: &point{-2, -1}, inputTail: &point{0, 0}, outputHead: &point{-2, -1}, outputTail: &point{-1, -1}},
-		"diag 8": {inputHead: &point{-1, -2}, inputTail: &point{0, 0}, outputHead: &point{-1, -2}, outputTail: &point{-1, -1}},
+		"diag 7":        {inputHead: &point{-2, -1}, inputTail: &point{0, 0}, outputHead: &point{-2, -1}, outputTail: &point{-1, -1}},
+		"diag 8":        {inputHead: &point{-1, -2}, inputTail: &point{0, 0}, outputHead: &point{-1, -2}, outputTail: &point{-1, -1}},
+		"part 2 diag 4": {inputHead: &point{-2, -2}, inputTail: &point{0, 0}, outputHead: &point{-2, -2}, outputTail: &point{-1, -1}},
 	}
 
 	for name, tc := range tests {
