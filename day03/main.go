@@ -30,7 +30,6 @@ func complete(items []string) (rune, rune) {
 		dupe += dupes(items[i : i+3])
 		badge += badges(items[i : i+3])
 	}
-
 	return dupe, badge
 }
 
@@ -56,10 +55,8 @@ func badges(items []string) rune {
 		three := strings.Split(items[i+2], "")
 
 		tmp := tripleIntersection(one, two, three)
-
 		num += numberRep([]rune(tmp[0])[0])
 	}
-
 	return num
 }
 

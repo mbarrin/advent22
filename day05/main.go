@@ -58,11 +58,9 @@ func main() {
 	partOne := []string{}
 	partTwo := []string{}
 
-	for _, x := range floor {
-		partOne = append(partOne, x[len(x)-1])
-	}
-	for _, x := range newFloor {
-		partTwo = append(partTwo, x[len(x)-1])
+	for i := range floor {
+		partOne = append(partOne, floor[i][len(floor[i])-1])
+		partTwo = append(partTwo, newFloor[i][len(floor[i])-1])
 	}
 
 	fmt.Println("part 1: ", strings.Join(partOne, ""))
