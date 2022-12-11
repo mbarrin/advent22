@@ -70,17 +70,18 @@ func (ms monkeys) business() int {
 }
 
 func (ms monkeys) throw(source int) {
-	ms[source].worryModifier()
-	ms[source].inspections++
+	m := ms[source]
+	m.worryModifier()
+	m.inspections++
 
-	item := ms[source].items[0]
-	ms[source].items = ms[source].items[1:]
+	item := m.items[0]
+	m.items = m.items[1:]
 
 	if item%ms[source].test == 0 {
-		dest := ms[ms[source].trueIndex]
+		dest := ms[m.trueIndex]
 		dest.items = append(dest.items, item)
 	} else {
-		dest := ms[ms[source].falseIndex]
+		dest := ms[m.falseIndex]
 		dest.items = append(dest.items, item)
 	}
 }
