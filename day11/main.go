@@ -20,9 +20,7 @@ type monkey struct {
 	worryModifier func()
 }
 
-type monkeys struct {
-	monkeys []*monkey
-}
+type monkeys []*monkey
 
 var itemsRegexp = regexp.MustCompile(`^\s+Starting items: ((\d+(, )?)+)`)
 
@@ -42,17 +40,15 @@ func main() {
 
 	for i := 0; i < 10000; i++ {
 		if i < 20 {
-			for _, m := range ms.monkeys {
+			for i, m := range ms {
 				for len(m.items) > 0 {
-					new, item := m.throw()
-					ms.monkeys[new].recieve(item)
+					ms.throw(i)
 				}
 			}
 		}
-		for _, m := range msBig.monkeys {
+		for i, m := range msBig {
 			for len(m.items) > 0 {
-				new, item := m.throw()
-				msBig.monkeys[new].recieve(item)
+				msBig.throw(i)
 			}
 		}
 	}
@@ -62,9 +58,9 @@ func main() {
 
 }
 
-func (ms *monkeys) business() int {
+func (ms monkeys) business() int {
 	activity := []int{}
-	for _, m := range ms.monkeys {
+	for _, m := range ms {
 		activity = append(activity, m.inspections)
 	}
 
@@ -73,35 +69,33 @@ func (ms *monkeys) business() int {
 	return activity[len(activity)-1] * activity[len(activity)-2]
 }
 
-func (m *monkey) recieve(item int) {
-	m.items = append(m.items, item)
-}
+func (ms monkeys) throw(source int) {
+	ms[source].worryModifier()
+	ms[source].inspections++
 
-func (m *monkey) throw() (int, int) {
-	m.worryModifier()
-	m.inspections++
+	item := ms[source].items[0]
+	ms[source].items = ms[source].items[1:]
 
-	item := m.items[0]
-	m.items = m.items[1:]
-
-	if item%m.test == 0 {
-		return m.trueIndex, item
+	if item%ms[source].test == 0 {
+		dest := ms[ms[source].trueIndex]
+		dest.items = append(dest.items, item)
 	} else {
-		return m.falseIndex, item
+		dest := ms[ms[source].falseIndex]
+		dest.items = append(dest.items, item)
 	}
 }
 
 func newMonkeys(lines []string, big bool) monkeys {
-	ms := monkeys{monkeys: []*monkey{}}
+	ms := monkeys{}
 	var lcd = 1
 
 	for i := 0; i < len(lines); i += 7 {
 		m := newMonkey(lines[i:i+7], big)
-		ms.monkeys = append(ms.monkeys, m)
+		ms = append(ms, m)
 		lcd *= m.test
 	}
 
-	for _, m := range ms.monkeys {
+	for _, m := range ms {
 		m.lcd = lcd
 	}
 
