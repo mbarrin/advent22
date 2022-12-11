@@ -77,7 +77,7 @@ func (ms monkeys) throw(source int) {
 	item := m.items[0]
 	m.items = m.items[1:]
 
-	if item%ms[source].test == 0 {
+	if item%m.test == 0 {
 		dest := ms[m.trueIndex]
 		dest.items = append(dest.items, item)
 	} else {
