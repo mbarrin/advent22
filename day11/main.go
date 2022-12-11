@@ -13,10 +13,15 @@ import (
 type monkey struct {
 	items         []int
 	test          int
+	lcd           int
 	trueIndex     int
 	falseIndex    int
 	inspections   int
 	worryModifier func()
+}
+
+type monkeys struct {
+	monkeys []*monkey
 }
 
 var itemsRegexp = regexp.MustCompile(`^\s+Starting items: ((\d+(, )?)+)`)
@@ -32,31 +37,40 @@ func main() {
 		lines = append(lines, scanner.Text())
 	}
 
-	monkeys := []*monkey{}
+	ms := newMonkeys(lines, false)
+	msBig := newMonkeys(lines, true)
 
-	for i := 0; i < len(lines); i += 7 {
-		m := newMonkey(lines[i : i+7])
-		monkeys = append(monkeys, m)
-	}
-
-	for i := 0; i < 20; i++ {
-		for _, m := range monkeys {
+	for i := 0; i < 10000; i++ {
+		if i < 20 {
+			for _, m := range ms.monkeys {
+				for len(m.items) > 0 {
+					new, item := m.throw()
+					ms.monkeys[new].recieve(item)
+				}
+			}
+		}
+		for _, m := range msBig.monkeys {
 			for len(m.items) > 0 {
 				new, item := m.throw()
-				monkeys[new].recieve(item)
+				msBig.monkeys[new].recieve(item)
 			}
 		}
 	}
 
-	activity := []int{}
+	fmt.Println("part 1:", ms.business())
+	fmt.Println("part 2:", msBig.business())
 
-	for _, m := range monkeys {
+}
+
+func (ms *monkeys) business() int {
+	activity := []int{}
+	for _, m := range ms.monkeys {
 		activity = append(activity, m.inspections)
 	}
 
 	sort.IntSlice.Sort(activity)
 
-	fmt.Println("part 1:", activity[len(activity)-1]*activity[len(activity)-2])
+	return activity[len(activity)-1] * activity[len(activity)-2]
 }
 
 func (m *monkey) recieve(item int) {
@@ -77,7 +91,24 @@ func (m *monkey) throw() (int, int) {
 	}
 }
 
-func newMonkey(info []string) *monkey {
+func newMonkeys(lines []string, big bool) monkeys {
+	ms := monkeys{monkeys: []*monkey{}}
+	var lcd = 1
+
+	for i := 0; i < len(lines); i += 7 {
+		m := newMonkey(lines[i:i+7], big)
+		ms.monkeys = append(ms.monkeys, m)
+		lcd *= m.test
+	}
+
+	for _, m := range ms.monkeys {
+		m.lcd = lcd
+	}
+
+	return ms
+}
+
+func newMonkey(info []string, big bool) *monkey {
 	m := monkey{items: []int{}}
 
 	// Create the initial list of items
@@ -92,13 +123,31 @@ func newMonkey(info []string) *monkey {
 
 	if operation[len(operation)-2] == "+" {
 		num, _ := strconv.Atoi(operation[len(operation)-1])
-		m.worryModifier = func() { m.items[0] += num; m.items[0] /= 3 }
+		m.worryModifier = func() {
+			m.items[0] += num
+			if !big {
+				m.items[0] /= 3
+			}
+			m.items[0] %= m.lcd
+		}
 	} else if operation[len(operation)-2] == "*" {
 		if strings.HasSuffix(info[2], "* old") {
-			m.worryModifier = func() { m.items[0] *= m.items[0]; m.items[0] /= 3 }
+			m.worryModifier = func() {
+				m.items[0] *= m.items[0]
+				if !big {
+					m.items[0] /= 3
+				}
+				m.items[0] %= m.lcd
+			}
 		} else {
 			num, _ := strconv.Atoi(operation[len(operation)-1])
-			m.worryModifier = func() { m.items[0] *= num; m.items[0] /= 3 }
+			m.worryModifier = func() {
+				m.items[0] *= num
+				if !big {
+					m.items[0] /= 3
+				}
+				m.items[0] %= m.lcd
+			}
 		}
 	} else {
 		panic("oh no")
