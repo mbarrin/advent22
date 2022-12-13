@@ -77,7 +77,7 @@ func shortestDistance(start, end *node) float64 {
 
 	openSet := openSet{start: true}
 	start.gScore = 0
-	start.fScore = float64(sld)
+	start.fScore = sld
 	openSet[start] = true
 
 	for len(openSet) > 0 {
@@ -132,7 +132,7 @@ func (n *node) checkNeighbour(o *node, openSet map[*node]bool, end *node) {
 		tentativeGScore := n.gScore + 1
 		if tentativeGScore < o.gScore {
 			o.gScore = tentativeGScore
-			o.fScore = tentativeGScore + float64(o.distance(end))
+			o.fScore = tentativeGScore + o.distance(end)
 			if !openSet[o] {
 				openSet[o] = true
 			}
