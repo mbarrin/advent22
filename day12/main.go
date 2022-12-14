@@ -128,7 +128,7 @@ func (n *node) distance(o *node) float64 {
 }
 
 func (n *node) checkNeighbour(o *node, openSet map[*node]bool, end *node) {
-	if o.height <= n.height || o.height == n.height+1 {
+	if o.height <= n.height+1 {
 		tentativeGScore := n.gScore + 1
 		if tentativeGScore < o.gScore {
 			o.gScore = tentativeGScore
