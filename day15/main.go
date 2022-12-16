@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 )
 
@@ -11,34 +12,63 @@ type point struct {
 	colID int
 }
 
+var lowestCol, highestCol = math.Inf(1), math.Inf(-1)
+
 func main() {
 	file, _ := os.Open("input.txt")
+	//file, _ := os.Open("sample.txt")
 	scanner := bufio.NewScanner(file)
 
 	beacons := map[point]bool{}
-	sensors := map[point]bool{}
-	invalidPoints := map[point]bool{}
+	sensors := map[point]int{}
 
 	for scanner.Scan() {
 		line := scanner.Text()
 		var sensorRow, sensorCol, beaconRow, beaconCol int
-		fmt.Sscanf(line, "Sensor at x=%d, y=%d: closest beacon is at x=%d, y=%d", &sensorRow, &sensorCol, &beaconRow, &beaconCol)
+		fmt.Sscanf(line, "Sensor at x=%d, y=%d: closest beacon is at x=%d, y=%d", &sensorCol, &sensorRow, &beaconCol, &beaconRow)
 
 		beacon := point{rowID: beaconRow, colID: beaconCol}
 		sensor := point{rowID: sensorRow, colID: sensorCol}
 
 		distance := manhattenDistance(beacon.colID, sensor.colID, beacon.rowID, sensor.rowID)
 
-		invalid(sensor, invalidPoints, distance)
+		if float64(beaconCol-distance) < lowestCol {
+			lowestCol = float64(beaconCol - distance)
+		}
 
+		if float64(beaconCol+distance) > highestCol {
+			highestCol = float64(beaconCol + distance)
+		}
+
+		sensors[sensor] = distance
 		beacons[beacon] = true
-		sensors[sensor] = true
 	}
-	fmt.Println("part 1:", invalidCount(invalidPoints, 2000000))
+	//fmt.Println("part 1:", invalidCount(lowestCol, highestCol, 10, sensors, beacons))
+	fmt.Println("part 1:", invalidCount(lowestCol, highestCol, 2000000, sensors, beacons))
 }
 
-func manhattenDistance(x1, x2, y1, y2 int) int {
-	return abs(x1-x2) + abs(y1-y2)
+func invalidCount(start, end float64, row int, sensors map[point]int, beacons map[point]bool) int {
+	count := 0
+	matches := map[point]bool{}
+
+	for col := start; col <= end; col++ {
+		for p, d := range sensors {
+			distance := manhattenDistance(int(col), p.colID, row, p.rowID)
+			if distance <= d {
+				tmp := point{row, int(col)}
+				_, sensorExists := sensors[tmp]
+				if !matches[tmp] && !beacons[tmp] && !sensorExists {
+					matches[tmp] = true
+					count++
+				}
+			}
+		}
+	}
+	return count
+}
+
+func manhattenDistance(col1, col2, row1, row2 int) int {
+	return abs(col1-col2) + abs(row1-row2)
 }
 
 func abs(num int) int {
@@ -46,29 +76,4 @@ func abs(num int) int {
 		return -num
 	}
 	return num
-}
-
-func invalidCount(points map[point]bool, row int) int {
-	count := 0
-
-	for k := range points {
-		if k.rowID == row {
-			count++
-		}
-	}
-
-	return count
-}
-
-func invalid(sensor point, points map[point]bool, distance int) {
-	for row := 0; row < distance; row++ {
-		for col := 0; col < distance; col++ {
-			if manhattenDistance(sensor.colID, sensor.colID+col, sensor.rowID, sensor.rowID+row) <= distance {
-				points[point{rowID: sensor.rowID + row, colID: sensor.colID + col}] = true
-				points[point{rowID: sensor.rowID - row, colID: sensor.colID + col}] = true
-				points[point{rowID: sensor.rowID + row, colID: sensor.colID - col}] = true
-				points[point{rowID: sensor.rowID - row, colID: sensor.colID - col}] = true
-			}
-		}
-	}
 }
