@@ -16,24 +16,31 @@ type point struct {
 var lowestRow = 0
 
 func main() {
-	file, _ := os.Open("sample.txt")
+	file, _ := os.Open("input.txt")
 	scanner := bufio.NewScanner(file)
 
 	cave := map[point]bool{}
+	biggerCave := map[point]bool{}
 
 	for scanner.Scan() {
-		parseLine(scanner.Text(), cave)
+		line := scanner.Text()
+		parseLine(line, cave)
+		parseLine(line, biggerCave)
 	}
 
-	fmt.Println("part 1:", dropAllSand(cave))
+	fmt.Println("part 1:", dropAllSand(cave, false))
+	fmt.Println("part 2:", dropAllSand(biggerCave, true))
 }
 
-func dropAllSand(cave map[point]bool) int {
+func dropAllSand(cave map[point]bool, bigger bool) int {
 	total := 0
 
 	for {
-		sand := dropSand(point{rowID: 0, colID: 500}, cave)
+		sand := dropSand(point{rowID: 0, colID: 500}, cave, bigger)
 		if sand == nil {
+			if bigger {
+				total++
+			}
 			return total
 		}
 		total++
@@ -41,14 +48,26 @@ func dropAllSand(cave map[point]bool) int {
 	}
 }
 
-func dropSand(sand point, cave map[point]bool) *point {
+func dropSand(sand point, cave map[point]bool, bigger bool) *point {
 	for {
-		if sand.rowID >= lowestRow {
-			return nil
+		if sand.rowID+1 == lowestRow+2 {
+			cave[point{sand.rowID + 1, sand.colID - 1}] = true
+			cave[point{sand.rowID + 1, sand.colID}] = true
+			cave[point{sand.rowID + 1, sand.colID + 1}] = true
+		}
+
+		if !bigger {
+			if sand.rowID >= lowestRow {
+				return nil
+			}
 		}
 
 		if (cave[point{sand.rowID + 1, sand.colID}] && cave[point{sand.rowID + 1, sand.colID - 1}] && cave[point{sand.rowID + 1, sand.colID + 1}]) {
-			return &sand
+			if (sand == point{rowID: 0, colID: 500}) && bigger {
+				return nil
+			} else {
+				return &sand
+			}
 		}
 
 		if !cave[point{sand.rowID + 1, sand.colID}] {
